@@ -1,0 +1,3 @@
+# entrega3
+
+Cree 3 modelos y 7 vistas. Los usuarios pueden verificar si estan registrados desde la pestaña de Usuarios, a traves de la cual llenan un formulario que, en caso de estar registrados, les señalara su modelo de vehiculo. Se puede pedir un repuesto desde la pestaña de Repuestos. Las cargas de personal en el sistema se hacen desde Staff.Los nuevos ingresantes pueden registrarse desde Registro.
