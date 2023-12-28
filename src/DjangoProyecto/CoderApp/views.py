@@ -45,12 +45,10 @@ def conductorbusquedarespuesta(request):
             return HttpResponse("Datos incompletos")
             
         
-        conductor = ConductorVehiculo.objects.filter(nombre__icontains=nombre, apellido__icontains=apellido)
-        
-
-        if conductor.exists():
-            return render(request, "conductor_busqueda_respuesta.html", {"conductor": conductor})
-        else:
+        try:
+            conductor_instance = ConductorVehiculo.objects.get(nombre__icontains=nombre, apellido__icontains=apellido)
+            return render(request, "conductor_busqueda_respuesta.html", {"conductor":conductor_instance})
+        except ConductorVehiculo.DoesNotExist:
             return HttpResponse("No se encontró el conductor")
     else:
         

@@ -1,7 +1,9 @@
 {% extends 'padre.html' %}
 {% load static %}
 {% block contenidoQueCambia %}
-<form action="{% url 'conductorbusquedarespuesta' %}" method="post">{% csrf_token %}
+
+<h1>Búsqueda de usuarios</h1>
+<form action="{% url 'conductorbusquedarespuesta' %}" method="get">
     <table>
         {{formulario.as_table}}
     </table>

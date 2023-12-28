@@ -10,7 +10,7 @@ class ConductorVehiculo(models.Model):
     email=models.EmailField()
 
     def __str__(self):
-        return f"{self.nombre}, {self.apellido} -- {self.email}"
+        return f"{self.nombre}, {self.apellido} -- {self.email} -- {self.modelovehiculo}"
     
 class Repuestos(models.Model):
     repuestorequerido = models.CharField(max_length=20, null=True)
