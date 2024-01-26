@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informacion del profesional</title>
+</head>
+
+<body>
+    <h1>Detalles del solicitante</h1>
+    <p>Nombre: {{staffsolicitud.nombre}}</p>
+    <p>Apellido: {{staffsolicitud.apellido}}</p>
+    <p>e-mail: {{staffsolicitud.email}}</p>
+    <p>mensaje : {{staffsolicitud.mensaje}}</p>
+
+    <a href="{% url 'soliList' %}">Regresar</a>
+    <a href="{% url 'soliDelete' staffsolicitud.id %}">Eliminar</a>
+
+
+</body>
+
+</html>

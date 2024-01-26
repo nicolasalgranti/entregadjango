@@ -1,42 +1,71 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from CoderApp.models import ConductorVehiculo, Repuestos, Staff
-from CoderApp.forms import VehiculoFormulario, ConductorBusqueda, RepuestosFormulario, StaffFormulario
+from CoderApp.models import Sugerencias, Staff, StaffSolicitud, Avatar
+from CoderApp.forms import UsuarioBusqueda, SugerenciasFormulario, StaffFormulario, UserRegistrationForm, UserEditForm, AvatarFormulario
 from datetime import datetime
 
+from django.views.generic import ListView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-def vehiculo_formulario(request):
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib.admin.views.decorators import staff_member_required
 
+from django.utils.decorators import method_decorator
+
+
+
+def registrar(request):
+    
     if request.method == "POST":
 
-        formulario = VehiculoFormulario(request.POST)
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+
+            username = form.cleaned_data.get("username")
+
+            form.save()
+
+            return render(request, "index.html", {"mensaje": f"Se dio de alta el usuario {username}"})
+
+
+    form = UserRegistrationForm()
+
+    return render(request, "registro.html", {"form": form})
+
+@login_required
+def editar_perfil(request):
+
+    usuario = request.user
+
+    if request.method == "POST":
+        
+        formulario = UserEditForm(request.POST, instance=usuario)
 
         if formulario.is_valid():
-            datos = formulario.cleaned_data
 
-            nombre = datos.get("nombre")
-            apellido = datos.get("apellido")
-            antiguedadvehiculo = datos.get("antiguedadvehiculo")
-            modelovehiculo = datos.get("modelovehiculo")
-            email = datos.get("email")
+            formulario.save()
 
-            vehiculo = ConductorVehiculo(nombre=nombre, apellido=apellido, antiguedadvehiculo=antiguedadvehiculo,modelovehiculo=modelovehiculo, email=email)
+            return render(request, "index.html")
 
-            vehiculo.save()
-
-            return render(request, 'registrado.html')
     else:
-        formulario = VehiculoFormulario()
-    return render(request, "vehiculo_formulario.html", {"formulario":formulario})
+
+        formulario = UserEditForm(instance = usuario)
 
 
-def conductorbusqueda(request):
+        return render(request, "editar_perfil.html", {"formulario": formulario, "usuario": usuario})
 
-    formulario = ConductorBusqueda()
-    return render(request, "conductor_busqueda.html", {"formulario":formulario})
 
-def conductorbusquedarespuesta(request):
+def usuariobusqueda(request):
+
+    formulario = UsuarioBusqueda()
+    return render(request, "usuario_busqueda.html", {"formulario":formulario})
+
+def usuariobusquedarespuesta(request):
     if request.method == "GET":
         nombre = request.GET.get("nombre")
         apellido = request.GET.get("apellido")
@@ -44,41 +73,40 @@ def conductorbusquedarespuesta(request):
         if not nombre or not apellido:
             return HttpResponse("Datos incompletos")
             
-        
         try:
-            conductor_instance = ConductorVehiculo.objects.get(nombre__icontains=nombre, apellido__icontains=apellido)
-            return render(request, "conductor_busqueda_respuesta.html", {"conductor":conductor_instance})
-        except ConductorVehiculo.DoesNotExist:
-            return HttpResponse("No se encontró el conductor")
+            usuario_instance = User.objects.get(first_name__icontains=nombre, last_name__icontains=apellido)
+            return render(request, "usuario_busqueda_respuesta.html", {"usuario":usuario_instance})
+        except User.DoesNotExist:
+            return HttpResponse("No se encontró el usaurio")
     else:
         
         return HttpResponse("Método de solicitud no válido")
         
 
-def repuestos(request):
+def sugerencias(request):
 
     if request.method == "POST":
-        formulario = RepuestosFormulario(request.POST)
+        formulario = SugerenciasFormulario(request.POST)
         
         if formulario.is_valid():
             datos = formulario.cleaned_data
 
-            repuestorequerido=datos.get("repuestorequerido")
+            sugerencia = datos.get("sugerencia")
 
-            repuestos = Repuestos(repuestorequerido=repuestorequerido)
+            sugerencia = Sugerencias(sugerencia=sugerencia)
 
-            repuestos.save()
+            sugerencia.save()
 
-            return HttpResponse("Su repuesto ha sido pedido")
+            return HttpResponse("Su sugerencia ha sido enviada y será evaluada. Muchas gracias!")
 
     else:
-        formulario=RepuestosFormulario()
+        formulario= SugerenciasFormulario()
     
-    return render(request, "repuestos.html", {"formulario": formulario})
+    return render(request, "sugerencias.html", {"formulario": formulario})
 
 
 
-def staffregistro(request):
+def staffsolicitud(request):
     if request.method == "POST":
         formulario = StaffFormulario(request.POST)
         if formulario.is_valid():
@@ -87,21 +115,140 @@ def staffregistro(request):
             nombre = datos_staff.get("nombre")
             apellido = datos_staff.get("apellido")
             email = datos_staff.get("email")
-            creado = datetime.now()
+            mensaje = datos_staff.get("mensaje")
 
-            staff = Staff(nombre=nombre, apellido=apellido, email=email, creado=creado)
+            staff = StaffSolicitud(nombre=nombre, apellido=apellido, email=email, mensaje=mensaje)
 
             staff.save()
 
-            return HttpResponse(f"Funcionario {nombre} {apellido} correctamente registrado en el sistema.")
+            return HttpResponse(f"{nombre} {apellido}, su solicitud ha sido enviada con éxito. En cuanto sea revisada, nos comunicaremos a su casilla de correo.")
     
     else:
         formulario=StaffFormulario()
     
-    return render(request, "staff_alta.html", {"formulario": formulario})
+    return render(request, "staff_solicitud.html", {"formulario": formulario})
 
 def index(request):
+
+    if request.user.is_authenticated:
+        avatar = Avatar.objects.filter(user=request.user.id).order_by('-created_at')
+        if avatar:
+            return render(request, 'index.html', {"url": avatar[0].image.url})
+
     return render(request, 'index.html')
 
-def registrado(request):
-    return render(request, 'registrado.html')
+def login_request(request):
+
+    if request.method == "POST":
+
+        form = AuthenticationForm(request, data=request.POST)
+
+        if form.is_valid():
+
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
+
+            user = authenticate(username=username, password=password)
+
+            if user is not None:
+                login(request, user)
+                
+                avatar = Avatar.objects.filter(user=request.user.id).order_by('-created_at')     
+                
+                if avatar:
+                    return render(request, "index.html", {"mensaje": f"Bienvenido a la plataforma!", "url": avatar[0].image.url})
+
+                return render(request, "index.html", {"mensaje": f"Bienvenido {username}"})
+            else:
+                return render(request, "index.html", {"mensaje": f"Usuario o contraseña inválidos"})
+            
+        else:
+            
+            return render(request, "index.html", {"mensaje": "Datos incorrectos"})
+
+    form = AuthenticationForm()
+
+    return render(request, "login.html", {"form": form})
+
+
+
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class StaffList(ListView):
+
+    model = Staff
+    template_name = 'staff_list.html'
+
+@method_decorator(staff_member_required, name='dispatch')
+class StaffDetalle(DetailView):
+    model = Staff
+    template_name = 'staff_detalle.html'
+
+@method_decorator(staff_member_required, name='dispatch')
+class StaffCreate(CreateView):
+
+    model = Staff
+    fields = ['nombre', 'apellido', 'email']
+    template_name = 'staff_form.html'
+    success_url = "/CoderApp/staff/list"
+
+@method_decorator(staff_member_required, name='dispatch')
+class StaffUpdate(UpdateView):
+
+    model = Staff
+    fields = ['nombre', 'apellido', 'email']
+    template_name = 'staff_form.html'
+    success_url = '/CoderApp/staff/list'
+
+@method_decorator(staff_member_required, name='dispatch')
+class StaffDelete(DeleteView):
+
+    model = Staff
+    template_name = "staff_confirm_delete.html"
+    success_url = "/CoderApp/staff/list"
+
+@method_decorator(staff_member_required, name='dispatch')
+class SolicitudList(ListView):
+
+    model = StaffSolicitud
+    template_name = "solicitud_list.html"
+
+@method_decorator(staff_member_required, name='dispatch')
+class SolicitudDetalle(DetailView):
+
+    model = StaffSolicitud
+    template_name = "solicitud_detalle.html"
+
+@method_decorator(staff_member_required, name='dispatch')
+class SolicitudDelete(DeleteView):
+
+    model = StaffSolicitud
+    template_name = "solicitud_confirm_delete.html"
+    success_url = "/CoderApp/solicitudes/list"
+
+
+@login_required
+def avatar(request):
+
+    if request.method == "POST":
+        
+        formulario = AvatarFormulario(request.POST, request.FILES)
+
+        if formulario.is_valid():
+
+            user = request.user
+            avatar = Avatar(user=user, image=formulario.cleaned_data.get("image"))
+            avatar.save()
+
+            return render(request, 'index.html')
+
+
+    formulario = AvatarFormulario()
+
+    return render(request, "avatar.html", {"formulario": formulario})
+    
+
+def sobrenosotros(request):
+    return render(request, 'sobrenosotros.html')
+    

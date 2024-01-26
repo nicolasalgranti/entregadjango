@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de personal</title>
+</head>
+
+<body>
+    <h1>Miembros del staff</h1>
+    <ul>
+        {% for staff in object_list %}
+        <li>
+            <p>Nombre: {{staff.nombre}}</p>
+            <p>Apellido: {{staff.apellido}}</p>
+            <p>
+                <a href="{% url 'Detail' staff.id %}">Ver detalles</a>
+                <a href="{% url 'Edit' staff.id %}">Editar</a>
+                <a href="{% url 'Delete' staff.id %}">Eliminar</a>
+            </p>
+        </li>
+        {% endfor %}
+        <br>
+        <br>
+        <a href="{% url 'Create' %}">Agregar profesional</a>
+    </ul>
+
+</body>
+
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informacion del profesional</title>
+</head>
+
+<body>
+    <p>Nombre: {{staff.nombre}}</p>
+    <p>Apellido: {{staff.apellido}}</p>
+    <p>e-mail: {{staff.email}}</p>
+    <p>agregado en : {{staff.creado}}</p>
+
+    <a href="{% url 'List' %}">Regresar</a>
+
+
+</body>
+
+</html>

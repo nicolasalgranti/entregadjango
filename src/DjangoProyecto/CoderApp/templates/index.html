@@ -2,6 +2,25 @@
 {% load static %}
 {% block contenidoQueCambia %}
 
-<h1>Servicio a domicilio y en local</h1>
+
+{{mensaje}}
+{% if request.user.is_authenticated %}
+<div class="text-center">
+    <img height="480px" src="{{url}}">
+    <h1>Hola {{user.username}}</h1>
+    {% if user.is_staff %}
+
+    <a class="btn btn-primary" href="http://127.0.0.1:8000/admin/login/?next=/admin/">Django admin</a>
+
+    {% endif %}
+</div>
+
+
+
+
+
+{% endif %}
+
+
 
 {% endblock %}

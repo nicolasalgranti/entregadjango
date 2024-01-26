@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eliminar solicitud</title>
+</head>
+
+<body>
+    <form method="post">{% csrf_token %}
+        Recuerde: en caso de querer agregar al solicitante al equipo debe hacerlo mediante /CoderApp/staff/list o desde
+        la administración web de Django
+        <input type="submit" value="Entendido">
+    </form>
+
+</body>
+
+</html>

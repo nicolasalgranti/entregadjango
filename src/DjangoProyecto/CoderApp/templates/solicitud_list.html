@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de personal</title>
+</head>
+
+<body>
+    <h1>Solicitudes</h1>
+    <ul>
+        {% for staffsolicitud in object_list %}
+        <li>
+            <p>Nombre: {{staffsolicitud.nombre}}</p>
+            <p>Apellido: {{staffsolicitud.apellido}}</p>
+            <p>
+                <a href="{% url 'soliDetalle' staffsolicitud.id %}">Ver detalles</a>
+                <a href="{% url 'soliDelete' staffsolicitud.id %}">Eliminar</a>
+            </p>
+        </li>
+        {% endfor %}
+        <br>
+        <br>
+    </ul>
+
+</body>
+
+</html>

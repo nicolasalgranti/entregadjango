@@ -1,0 +1,16 @@
+{% extends 'padre.html' %}
+{% load static %}
+{% block contenidoQueCambia %}
+
+<h1>Bienvenido, {{conductor.nombre}}.</h1>
+<h2>Datos de la cuenta:</h2>
+<ul>
+    <li>nombre: {{conductor.nombre}}</li>
+    <li>apellido: {{conductor.apellido}}</li>
+    <li>email: {{conductor.email}}</li>
+    <li>vehiculo: {{conductor.modelovehiculo}}</li>
+    <li>año del vehículo: {{conductor.antiguedadvehiculo}}</li>
+
+</ul>
+
+{% endblock %}
