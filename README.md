@@ -1,7 +1,7 @@
 # entrega
 Proyecto Fakebook
 
-link video expliación: https://drive.google.com/file/d/18LuClYgo-KrueOnCNwC_8Yp_VPpwDCi9/view?usp=drive_link
+link video explicación: https://drive.google.com/file/d/18LuClYgo-KrueOnCNwC_8Yp_VPpwDCi9/view?usp=drive_link
 
 Django admin datos:
         nombre: admin
